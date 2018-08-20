@@ -1,0 +1,33 @@
+version: '2.2'
+services:
+ zookeeper:
+  image: wurstmeister/zookeeper:3.4.6
+  ports:
+    - 2181:2181
+  network_mode: host
+  
+ kafka:
+  image: wurstmeister/kafka:1.0.0
+  ports:
+    - 9092:9092
+  links:
+   - zookeeper
+  environment:
+    KAFKA_ADVERTISED_HOST_NAME: kafka
+    KAFKA_ADVERTISED_PORT: 9092
+    KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+    KAFKA_CREATE_TOPICS: "order:5:1"
+ producer:
+  image: thoopalliamar/producer:1.0
+  restart: always
+  network_mode: host
+  container_name: spring-docker-2
+  ports:
+   - 8080:8080
+ consumer:
+  image: thoopalliamar/consumer:1.0
+  restart: always
+  network_mode: host
+  container_name: spring-docker-1
+  ports:
+   - 8081:8081
